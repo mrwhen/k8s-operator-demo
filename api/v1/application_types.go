@@ -56,6 +56,8 @@ type ApplicationStatus struct {
 // 也就是实现runtime.Object接口, 一个结构体要表示一个Kind,必须实现runtime.Object接口
 
 //+kubebuilder:object:root=true
+//+kubebuilder:resource:path=applications,singular=application,scope=Namespaced,shortName=app
+//+kubebuilder:storageversion
 //+kubebuilder:subresource:status
 
 // Application is the Schema for the applications API
