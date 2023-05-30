@@ -18,15 +18,21 @@ package controller
 
 import (
 	"context"
+	"reflect"
 	"time"
 
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
-	appsv1 "github.com/daniel-hutao/application-operator/api/v1"
+	dappsv1 "github.com/daniel-hutao/application-operator/api/v1"
+	appsv1 "k8s.io/api/apps/v1"
 )
 
 // ApplicationReconciler reconciles a Application object
@@ -68,7 +74,7 @@ func (r *ApplicationReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	CounterReconcileApplication += 1
 	log.Info("Starting a reconcile", "number", CounterReconcileApplication)
 
-	app := &appsv1.Application{}
+	app := &dappsv1.Application{}
 	if err := r.Get(ctx, req.NamespacedName, app); err != nil {
 		if errors.IsNotFound(err) {
 			log.Info("Application not found")
@@ -98,7 +104,68 @@ func (r *ApplicationReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *ApplicationReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	setupLog := ctrl.Log.WithName("setup")
+
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&appsv1.Application{}).
+		For(&dappsv1.Application{}, builder.WithPredicates(predicate.Funcs{
+			CreateFunc: func(event event.CreateEvent) bool {
+				return true
+			},
+			DeleteFunc: func(event event.DeleteEvent) bool {
+				setupLog.Info("The Application has been deleted.",
+					"name", event.Object.GetName())
+				return false
+			},
+			UpdateFunc: func(event event.UpdateEvent) bool {
+				if event.ObjectNew.GetResourceVersion() == event.ObjectOld.GetResourceVersion() {
+					return false
+				}
+				if reflect.DeepEqual(event.ObjectNew.(*dappsv1.Application).Spec, event.ObjectOld.(*dappsv1.Application).Spec) {
+					return false
+				}
+				return true
+			},
+		})).
+		// 1. Deployment
+		Owns(&appsv1.Deployment{}, builder.WithPredicates(predicate.Funcs{
+			CreateFunc: func(event event.CreateEvent) bool {
+				return false
+			},
+			DeleteFunc: func(event event.DeleteEvent) bool {
+				setupLog.Info("The Deployment has been deleted.",
+					"name", event.Object.GetName())
+				return true
+			},
+			UpdateFunc: func(event event.UpdateEvent) bool {
+				if event.ObjectNew.GetResourceVersion() == event.ObjectOld.GetResourceVersion() {
+					return false
+				}
+				if reflect.DeepEqual(event.ObjectNew.(*appsv1.Deployment).Spec, event.ObjectOld.(*appsv1.Deployment).Spec) {
+					return false
+				}
+				return true
+			},
+			GenericFunc: nil,
+		})).
+		// 2. Service
+		Owns(&corev1.Service{}, builder.WithPredicates(predicate.Funcs{
+			CreateFunc: func(event event.CreateEvent) bool {
+				return false
+			},
+			DeleteFunc: func(event event.DeleteEvent) bool {
+				setupLog.Info("The Service has been deleted.",
+					"name", event.Object.GetName())
+				return true
+			},
+			UpdateFunc: func(event event.UpdateEvent) bool {
+				if event.ObjectNew.GetResourceVersion() == event.ObjectOld.GetResourceVersion() {
+					return false
+				}
+				if reflect.DeepEqual(event.ObjectNew.(*dappsv1.Application).Spec, event.ObjectOld.(*dappsv1.Application).Spec) {
+					return false
+				}
+				return true
+			},
+		})).
 		Complete(r)
 }
