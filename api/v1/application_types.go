@@ -34,7 +34,7 @@ type ApplicationSpec struct {
 	// Foo string `json:"foo,omitempty"`
 
 	Deployment DeploymentTemplate `json:"deployment,omitempty"`
-	Service    ServiceTemplate    `json:"service,omitempty"`
+	// Service    ServiceTemplate    `json:"service,omitempty"`
 }
 
 type DeploymentTemplate struct {

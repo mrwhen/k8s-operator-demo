@@ -45,7 +45,7 @@ func (r *ApplicationReconciler) reconcoleService(ctx context.Context, app *dapps
 	newSvc.SetName(app.Name)
 	newSvc.SetNamespace(app.Namespace)
 	newSvc.SetLabels(app.Labels)
-	newSvc.Spec = app.Spec.Service.ServiceSpec
+	// newSvc.Spec = app.Spec.Service.ServiceSpec
 	newSvc.Spec.Selector = app.Labels
 
 	if err := ctrl.SetControllerReference(app, newSvc, r.Scheme); err != nil {
