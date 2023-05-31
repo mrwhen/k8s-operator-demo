@@ -34,7 +34,7 @@ type ApplicationSpec struct {
 	// +kubebuilder:pruning:PreserveUnknownFields
 	// +kubebuilder:validation:Schemaless
 	Deployment DeploymentTemplate `json:"deployment,omitempty"`
-	// Service    ServiceTemplate    `json:"service,omitempty"`
+	Service    ServiceTemplate    `json:"service,omitempty"`
 }
 
 type DeploymentTemplate struct {
