@@ -93,11 +93,11 @@ func (r *ApplicationReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		log.Error(err, "Failed to reconcile Deployment")
 		return result, err
 	}
-	result, err = r.reconcoleService(ctx, app)
-	if err != nil {
-		log.Error(err, "Failed to reconcile Service")
-		return result, err
-	}
+	// result, err = r.reconcoleService(ctx, app)
+	// if err != nil {
+	// 	log.Error(err, "Failed to reconcile Service")
+	// 	return result, err
+	// }
 	log.Info("All resource have benn reconciled")
 	return ctrl.Result{}, nil
 }

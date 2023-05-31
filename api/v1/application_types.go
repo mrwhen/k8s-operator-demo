@@ -26,13 +26,13 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 // ApplicationSpec defines the desired state of Application
+// +kubebuilder:pruning:PreserveUnknownFields
 type ApplicationSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of Application. Edit application_types.go to remove/update
-	// Foo string `json:"foo,omitempty"`
-
+	// +kubebuilder:pruning:PreserveUnknownFields
+	// +kubebuilder:validation:Schemaless
 	Deployment DeploymentTemplate `json:"deployment,omitempty"`
 	// Service    ServiceTemplate    `json:"service,omitempty"`
 }
@@ -55,12 +55,10 @@ type ApplicationStatus struct {
 // controller-tools的对象生成器就知道这个标记下面的对象代表一个Kind,接着对象生成器会生成相应的Kind需要的代码
 // 也就是实现runtime.Object接口, 一个结构体要表示一个Kind,必须实现runtime.Object接口
 
-//+kubebuilder:object:root=true
-//+kubebuilder:resource:path=applications,singular=application,scope=Namespaced,shortName=app
-//+kubebuilder:storageversion
-//+kubebuilder:subresource:status
-
-// Application is the Schema for the applications API
+// +kubebuilder:object:root=true
+// +kubebuilder:resource:path=applications,singular=application,scope=Namespaced,shortName=app
+// +kubebuilder:storageversion
+// +kubebuilder:subresource:status
 type Application struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
