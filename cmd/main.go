@@ -68,6 +68,8 @@ func main() {
 	// 负责跟踪维护和运行所有的controllers
 	// 设置共享缓存
 	// 设置和kube-apiserver通信用的各种clients
+	// manager运行后，反过来启动所有的controller和webhook
+	// 一直运行在后台，直到接收到优雅停止信号
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
 		MetricsBindAddress:     metricsAddr,

@@ -5,7 +5,7 @@
 domain: danielhu.cn
 layout:
 - go.kubebuilder.io/v4
-projectName: myoperatorprojects
+projectName: operator-demo
 repo: github.com/daniel-hutao/application-operator
 resources:
 - api:
