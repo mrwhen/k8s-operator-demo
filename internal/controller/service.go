@@ -48,6 +48,8 @@ func (r *ApplicationReconciler) reconcoleService(ctx context.Context, app *dapps
 	newSvc.Spec = app.Spec.Service.ServiceSpec
 	newSvc.Spec.Selector = app.Labels
 
+	// 将当前创建的Deployment资源设置成Application类型的app资源的子资源，这样当对应的Application类型实例被删除时
+	// 这个Deployment类型的资源实例就会被系统的垃圾回收系统回收
 	if err := ctrl.SetControllerReference(app, newSvc, r.Scheme); err != nil {
 		log.Error(err, "Failed to SetControllerReference, will requeue after a short time.")
 		return ctrl.Result{RequeueAfter: GenericRequeueDuration}, err

@@ -109,40 +109,48 @@ func (r *ApplicationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&dappsv1.Application{}, builder.WithPredicates(predicate.Funcs{
 			CreateFunc: func(event event.CreateEvent) bool {
+				setupLog.Info("manager app createfunc")
 				return true
 			},
 			DeleteFunc: func(event event.DeleteEvent) bool {
-				setupLog.Info("The Application has been deleted.",
+				setupLog.Info("manager app deletefunc ，The Application has been deleted.",
 					"name", event.Object.GetName())
 				return false
 			},
 			UpdateFunc: func(event event.UpdateEvent) bool {
 				if event.ObjectNew.GetResourceVersion() == event.ObjectOld.GetResourceVersion() {
+					setupLog.Info("manager app updatefunc 1")
 					return false
 				}
 				if reflect.DeepEqual(event.ObjectNew.(*dappsv1.Application).Spec, event.ObjectOld.(*dappsv1.Application).Spec) {
+					setupLog.Info("manager app updatefunc 2")
 					return false
 				}
+				setupLog.Info("manager app updatefunc 3")
 				return true
 			},
 		})).
 		// 1. Deployment
 		Owns(&appsv1.Deployment{}, builder.WithPredicates(predicate.Funcs{
 			CreateFunc: func(event event.CreateEvent) bool {
+				setupLog.Info("manager deployment createfunc")
 				return false
 			},
 			DeleteFunc: func(event event.DeleteEvent) bool {
-				setupLog.Info("The Deployment has been deleted.",
+				setupLog.Info("manager deployment deletefunc, The Deployment has been deleted.",
 					"name", event.Object.GetName())
 				return true
 			},
 			UpdateFunc: func(event event.UpdateEvent) bool {
 				if event.ObjectNew.GetResourceVersion() == event.ObjectOld.GetResourceVersion() {
+					setupLog.Info("manager deployment updatefunc 1")
 					return false
 				}
 				if reflect.DeepEqual(event.ObjectNew.(*appsv1.Deployment).Spec, event.ObjectOld.(*appsv1.Deployment).Spec) {
+					setupLog.Info("manager deployment updatefunc 2")
 					return false
 				}
+				setupLog.Info("manager deployment updatefunc 3")
 				return true
 			},
 			GenericFunc: nil,
@@ -150,20 +158,24 @@ func (r *ApplicationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		// 2. Service
 		Owns(&corev1.Service{}, builder.WithPredicates(predicate.Funcs{
 			CreateFunc: func(event event.CreateEvent) bool {
+				setupLog.Info("manager service createfunc")
 				return false
 			},
 			DeleteFunc: func(event event.DeleteEvent) bool {
-				setupLog.Info("The Service has been deleted.",
+				setupLog.Info("manager service deletefunc, The Service has been deleted.",
 					"name", event.Object.GetName())
 				return true
 			},
 			UpdateFunc: func(event event.UpdateEvent) bool {
 				if event.ObjectNew.GetResourceVersion() == event.ObjectOld.GetResourceVersion() {
+					setupLog.Info("manager service updatefunc 1")
 					return false
 				}
 				if reflect.DeepEqual(event.ObjectNew.(*dappsv1.Application).Spec, event.ObjectOld.(*dappsv1.Application).Spec) {
+					setupLog.Info("manager service updatefunc 2")
 					return false
 				}
+				setupLog.Info("manager service updatefunc 3")
 				return true
 			},
 		})).

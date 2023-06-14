@@ -56,13 +56,15 @@ type ApplicationStatus struct {
 // 也就是实现runtime.Object接口, 一个结构体要表示一个Kind,必须实现runtime.Object接口
 
 // +kubebuilder:object:root=true
-// +kubebuilder:resource:path=applications,singular=application,scope=Namespaced,shortName=app
+// +kubebuilder:resource:path=applications,singular=application,scope=Namespaced,shortName=app3
 // +kubebuilder:storageversion
 // +kubebuilder:subresource:status
 type Application struct {
+	// 一般情况下，这两个对象都是不需要修改的
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
+	// 一般修改都是针对这俩
 	Spec   ApplicationSpec   `json:"spec,omitempty"`
 	Status ApplicationStatus `json:"status,omitempty"`
 }
