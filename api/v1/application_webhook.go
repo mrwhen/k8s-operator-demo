@@ -83,6 +83,7 @@ func (r *Application) ValidateDelete() error {
 }
 
 func (r *Application) ValidateApplication() error {
+	fmt.Println("====================================================================>")
 	if *r.Spec.Deployment.Replicas > 10 {
 		return fmt.Errorf("replicas too many error")
 	}
